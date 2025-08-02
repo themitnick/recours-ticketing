@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="fr" data-critters-container>
+<head>
+  <meta charset="utf-8">
+  <title>Système de Recours et Ticketing - ANARE-CI</title>
+  <base href="/recours-ticketing/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script>
+    // Redirection pour GitHub Pages SPA
+    // Ceci gère les routes client-side lors d'un accès direct
+    (function(l) {
+      if (l.search[1] === '/' ) {
+        var decoded = l.search.slice(1).split('&').map(function(s) { 
+          return s.replace(/~and~/g, '&')
+        }).join('?');
+        window.history.replaceState(null, null,
+            l.pathname.slice(0, -1) + decoded + l.hash
+        );
+      }
+    }(window.location))
+  </script>
+</head>
+<body>
+  <app-root></app-root>
+  <!-- Note: Ce fichier sera remplacé par index.html lors du build -->
+</body>
+</html>

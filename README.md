@@ -38,6 +38,23 @@ This will compile your project and store the build artifacts in the `dist/` dire
 
 ### GitHub Pages Deployment
 
+#### 🚨 Si vous obtenez une erreur 404
+
+**Diagnostic automatique :**
+```powershell
+.\diagnose-gh-pages.ps1
+```
+
+**Correction automatique :**
+```powershell
+.\fix-gh-pages-config.ps1
+```
+
+**Problèmes courants :**
+1. **Nom du repository différent** : Si votre repository ne s'appelle pas `recours-ticketing`, le script de correction va automatiquement ajuster la configuration
+2. **Mauvaise configuration GitHub Pages** : Vérifiez Settings → Pages → Source: "Deploy from a branch" → Branch: "gh-pages"
+3. **Repository privé** : GitHub Pages ne fonctionne que sur les repositories publics (ou avec un plan payant)
+
 #### 🚨 Si la branche gh-pages n'est pas créée
 
 **Solution SIMPLE (recommandée) :**

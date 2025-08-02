@@ -38,10 +38,34 @@ This will compile your project and store the build artifacts in the `dist/` dire
 
 ### GitHub Pages Deployment
 
-#### Déploiement Automatique
-Le projet est configuré pour se déployer automatiquement sur GitHub Pages via GitHub Actions.
+#### 🚨 Si la branche gh-pages n'est pas créée
 
-#### Déploiement Manuel
+**Solution SIMPLE (recommandée) :**
+```powershell
+# Windows PowerShell - Exécutez ceci dans le dossier du projet
+.\setup-gh-pages.ps1
+```
+
+Cette commande va :
+- ✅ Builder le projet pour GitHub Pages
+- ✅ Créer la branche `gh-pages` 
+- ✅ Copier tous les fichiers nécessaires (y compris 404.html et .nojekyll)
+- ✅ Pousser vers GitHub
+- ✅ Vous donner l'URL de votre site
+
+#### Déploiement Automatique
+Après la création initiale, le projet se déploie automatiquement via GitHub Actions à chaque push sur `main`.
+
+#### Configuration GitHub Pages (à faire une seule fois)
+
+1. **Allez dans votre repository GitHub**
+2. **Settings → Pages**
+3. **Source:** "Deploy from a branch"
+4. **Branch:** "gh-pages"
+5. **Folder:** "/ (root)"
+6. **Save**
+
+#### Déploiement Manuel (méthodes alternatives)
 
 **Option 1: Scripts de déploiement**
 ```bash

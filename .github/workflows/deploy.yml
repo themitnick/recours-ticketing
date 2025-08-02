@@ -3,6 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:  # Permet déclenchement manuel
 
 # Permissions nécessaires pour créer la branche gh-pages
 permissions:
@@ -19,6 +20,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0  # Nécessaire pour créer la branche gh-pages
+        token: ${{ secrets.GITHUB_TOKEN }}
       
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -38,14 +40,51 @@ jobs:
     - name: Add .nojekyll file
       run: touch dist/recours-ticketing/browser/.nojekyll
       
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v4
-      if: github.ref == 'refs/heads/main'
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./dist/recours-ticketing/browser
-        force_orphan: true
-        enable_jekyll: false
-        user_name: 'github-actions[bot]'
-        user_email: 'github-actions[bot]@users.noreply.github.com'
-        commit_message: 'Deploy to GitHub Pages'
+    - name: Configure Git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        
+    - name: Deploy to gh-pages branch (manual method)
+      run: |
+        echo "🚀 Deploying to gh-pages branch..."
+        
+        # Créer un répertoire temporaire
+        mkdir -p temp-gh-pages
+        cp -r dist/recours-ticketing/browser/* temp-gh-pages/
+        cp dist/recours-ticketing/browser/.nojekyll temp-gh-pages/ 2>/dev/null || true
+        
+        # Sauvegarder la branche actuelle
+        CURRENT_BRANCH=$(git branch --show-current)
+        
+        # Vérifier si gh-pages existe
+        if git ls-remote --heads origin gh-pages | grep -q gh-pages; then
+          echo "✅ gh-pages branch exists, updating..."
+          git fetch origin gh-pages
+          git checkout gh-pages
+          # Nettoyer le contenu actuel (sauf .git)
+          find . -maxdepth 1 ! -name '.git' ! -name '.' ! -name '..' -exec rm -rf {} +
+        else
+          echo "🆕 Creating new gh-pages branch..."
+          git checkout --orphan gh-pages
+          git rm -rf . 2>/dev/null || true
+        fi
+        
+        # Copier les nouveaux fichiers
+        cp -r temp-gh-pages/* .
+        cp temp-gh-pages/.nojekyll . 2>/dev/null || true
+        
+        # Nettoyer le répertoire temporaire
+        rm -rf temp-gh-pages
+        
+        # Ajouter et committer
+        git add .
+        git commit -m "Deploy to GitHub Pages - $(date -u)"
+        
+        # Push
+        git push origin gh-pages
+        
+        echo "✅ Successfully deployed to gh-pages!"
+        
+        # Retourner à la branche originale
+        git checkout $CURRENT_BRANCH

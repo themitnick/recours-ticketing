@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages (Create gh-pages branch)
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -17,6 +17,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Nécessaire pour créer la branche gh-pages
       
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -28,7 +30,13 @@ jobs:
       run: npm ci
       
     - name: Build
-      run: npm run build:gh-pages
+      run: npm run build:github-pages
+      
+    - name: Copy index.html to 404.html for SPA routing
+      run: cp dist/recours-ticketing/browser/index.html dist/recours-ticketing/browser/404.html
+      
+    - name: Add .nojekyll file
+      run: touch dist/recours-ticketing/browser/.nojekyll
       
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
@@ -37,5 +45,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./dist/recours-ticketing/browser
         force_orphan: true
+        enable_jekyll: false
         user_name: 'github-actions[bot]'
         user_email: 'github-actions[bot]@users.noreply.github.com'
+        commit_message: 'Deploy to GitHub Pages'

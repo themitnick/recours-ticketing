@@ -38,32 +38,56 @@ This will compile your project and store the build artifacts in the `dist/` dire
 
 ### GitHub Pages Deployment
 
-To build for GitHub Pages deployment:
+#### Déploiement Automatique
+Le projet est configuré pour se déployer automatiquement sur GitHub Pages via GitHub Actions.
 
+#### Déploiement Manuel
+
+**Option 1: Scripts de déploiement**
 ```bash
-npm run build:github-pages
+# Linux/macOS
+chmod +x deploy.sh
+./deploy.sh
+
+# Windows PowerShell
+.\deploy.ps1
 ```
 
-To build and prepare for GitHub Pages (with 404.html):
-
+**Option 2: Commandes npm**
 ```bash
+# Build pour GitHub Pages
+npm run build:github-pages
+
+# Build et préparation complète
 npm run deploy:github-pages
 ```
 
-The project is configured to automatically deploy to GitHub Pages when you push to the `main` branch via GitHub Actions.
+**Option 3: Workflow manuel**
+Allez dans l'onglet "Actions" de votre repository GitHub et déclenchez le workflow "Deploy to GitHub Pages (Alternative)".
 
-#### Manual GitHub Pages Setup
+#### Configuration GitHub Pages
 
-1. Go to your repository Settings
-2. Navigate to Pages section
-3. Select "Deploy from a branch"
-4. Choose "gh-pages" branch
-5. Select "/ (root)" folder
-6. Save
+1. **Activez GitHub Pages :**
+   - Allez dans Settings → Pages
+   - Source: "Deploy from a branch"
+   - Branch: "gh-pages" (sera créée automatiquement)
+   - Folder: "/ (root)"
 
-The application will be available at: `https://yourusername.github.io/recours-ticketing/`
+2. **Permissions GitHub Actions :**
+   - Settings → Actions → General
+   - "Read and write permissions"
+   - "Allow GitHub Actions to create and approve pull requests"
 
-**Note**: The 404.html file is automatically generated to handle client-side routing in Angular.
+3. **Push vers main ou déclenchez manuellement :**
+   ```bash
+   git add .
+   git commit -m "Configuration GitHub Pages"
+   git push origin main
+   ```
+
+L'application sera disponible à: `https://yourusername.github.io/recours-ticketing/`
+
+**Note**: Si la branche `gh-pages` n'est pas créée automatiquement, utilisez le workflow manuel ou les scripts de déploiement.
 
 ## Running unit tests
 

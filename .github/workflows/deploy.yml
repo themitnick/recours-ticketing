@@ -1,9 +1,8 @@
-name: Deploy to GitHub Pages
+name: Deploy to GitHub Pages (Create gh-pages branch)
 
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:  # Permet déclenchement manuel
 
 # Permissions nécessaires pour créer la branche gh-pages
 permissions:
@@ -18,9 +17,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # Nécessaire pour créer la branche gh-pages
-        token: ${{ secrets.GITHUB_TOKEN }}
       
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -32,155 +28,14 @@ jobs:
       run: npm ci
       
     - name: Build
-      run: npm run build:github-pages
+      run: npm run build:gh-pages
       
-    - name: Debug build output
-      run: |
-        echo "🔍 Checking build output structure..."
-        echo "Current directory:"
-        pwd
-        echo "Contents of current directory:"
-        ls -la
-        echo "Contents of dist directory (if exists):"
-        ls -la dist/ 2>/dev/null || echo "No dist directory"
-        echo "Looking for any browser directories:"
-        find . -name "browser" -type d 2>/dev/null || echo "No browser directories found"
-        echo "Contents of dist/recours-ticketing (if exists):"
-        ls -la dist/recours-ticketing/ 2>/dev/null || echo "No dist/recours-ticketing directory"
-        echo "Contents of dist/recours-ticketing/browser (if exists):"
-        ls -la dist/recours-ticketing/browser/ 2>/dev/null || echo "No dist/recours-ticketing/browser directory"
-      
-    - name: Copy index.html to 404.html for SPA routing
-      run: |
-        # Trouver le répertoire de build réel
-        if [ -d "dist/recours-ticketing/browser" ]; then
-          BUILD_DIR="dist/recours-ticketing/browser"
-        elif [ -d "dist/recours-ticketing" ]; then
-          BUILD_DIR="dist/recours-ticketing"
-        elif [ -d "dist" ]; then
-          BUILD_DIR="dist"
-        else
-          echo "❌ No build directory found!"
-          exit 1
-        fi
-        
-        echo "📋 Using build directory: $BUILD_DIR"
-        echo "Contents of build directory:"
-        ls -la "$BUILD_DIR"
-        
-        # Vérifier que index.html existe
-        if [ ! -f "$BUILD_DIR/index.html" ]; then
-          echo "❌ index.html not found in $BUILD_DIR"
-          exit 1
-        fi
-        
-        # Vérifier le contenu d'index.html pour le base href
-        echo "📋 Checking base href in index.html:"
-        grep -n "base href" "$BUILD_DIR/index.html" || echo "No base href found"
-        
-        # Copier index.html vers 404.html pour le routing SPA
-        cp "$BUILD_DIR/index.html" "$BUILD_DIR/404.html"
-        echo "✅ 404.html created (copy of index.html)"
-        
-        # Créer .nojekyll
-        touch "$BUILD_DIR/.nojekyll"
-        echo "✅ .nojekyll created"
-        
-        # Afficher le contenu final pour debug
-        echo "📋 Final files in build directory:"
-        ls -la "$BUILD_DIR"
-        
-        # Sauvegarder le chemin du build pour les étapes suivantes
-        echo "BUILD_DIR=$BUILD_DIR" >> $GITHUB_ENV
-      
-    - name: Configure Git
-      run: |
-        git config --global user.name 'github-actions[bot]'
-        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        
-    - name: Deploy to gh-pages branch (manual method)
-      run: |
-        echo "🚀 Deploying to gh-pages branch..."
-        
-        # Utiliser le répertoire de build détecté
-        BUILD_DIR="${BUILD_DIR:-dist/recours-ticketing/browser}"
-        
-        # Vérifier que les fichiers de build existent
-        if [ ! -d "$BUILD_DIR" ]; then
-          echo "❌ Build directory $BUILD_DIR not found!"
-          exit 1
-        fi
-        
-        echo "📂 Using build directory: $BUILD_DIR"
-        echo "Build directory contents:"
-        ls -la "$BUILD_DIR"
-        
-        # Créer un répertoire temporaire
-        mkdir -p temp-gh-pages
-        
-        # Copier les fichiers de build avec vérification
-        echo "📋 Copying build files..."
-        if [ "$(ls -A "$BUILD_DIR" 2>/dev/null)" ]; then
-          cp -r "$BUILD_DIR"/* temp-gh-pages/ 2>/dev/null || echo "Warning: Some files couldn't be copied"
-          
-          # Copier .nojekyll s'il existe
-          if [ -f "$BUILD_DIR/.nojekyll" ]; then
-            cp "$BUILD_DIR/.nojekyll" temp-gh-pages/
-          fi
-        else
-          echo "❌ Build directory is empty!"
-          exit 1
-        fi
-        
-        # Vérifier le contenu du répertoire temporaire
-        echo "📋 Temp directory contents:"
-        ls -la temp-gh-pages/
-        
-        # Sauvegarder la branche actuelle
-        CURRENT_BRANCH=$(git branch --show-current)
-        echo "Current branch: $CURRENT_BRANCH"
-        
-        # Vérifier si gh-pages existe
-        if git ls-remote --heads origin gh-pages | grep -q gh-pages; then
-          echo "✅ gh-pages branch exists, updating..."
-          git fetch origin gh-pages
-          git checkout gh-pages
-          # Nettoyer le contenu actuel (sauf .git)
-          find . -maxdepth 1 ! -name '.git' ! -name '.' ! -name '..' -exec rm -rf {} + 2>/dev/null || true
-        else
-          echo "🆕 Creating new gh-pages branch..."
-          git checkout --orphan gh-pages
-          git rm -rf . 2>/dev/null || true
-        fi
-        
-        # Copier les nouveaux fichiers
-        echo "📂 Copying files to gh-pages branch..."
-        cp -r temp-gh-pages/* . 2>/dev/null || true
-        
-        # Copier .nojekyll s'il existe
-        if [ -f "temp-gh-pages/.nojekyll" ]; then
-          cp temp-gh-pages/.nojekyll .
-        fi
-        
-        # Vérifier le contenu final
-        echo "📋 Final gh-pages content:"
-        ls -la
-        
-        # Ajouter et committer
-        git add .
-        
-        # Vérifier qu'il y a des changements à committer
-        if git diff --staged --quiet; then
-          echo "⚠️ No changes to commit"
-        else
-          git commit -m "Deploy to GitHub Pages - $(date -u)"
-          # Push
-          git push origin gh-pages
-          echo "✅ Successfully deployed to gh-pages!"
-        fi
-        
-        # Nettoyer le répertoire temporaire
-        rm -rf temp-gh-pages
-        
-        # Retourner à la branche originale
-        git checkout $CURRENT_BRANCH
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v4
+      if: github.ref == 'refs/heads/main'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist/recours-ticketing/browser
+        force_orphan: true
+        user_name: 'github-actions[bot]'
+        user_email: 'github-actions[bot]@users.noreply.github.com'

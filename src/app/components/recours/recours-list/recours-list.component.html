@@ -1,0 +1,155 @@
+<div class="recours-list">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Gestion des Recours</h1>
+      <p class="text-gray-600 mt-1">{{ filteredRecours.length }} recours au total</p>
+    </div>
+    <a routerLink="/recours/nouveau" class="btn btn-primary">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      Nouveau Recours
+    </a>
+  </div>
+
+  <!-- Filtres et recherche -->
+  <div class="card p-6 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <!-- Recherche -->
+      <div class="lg:col-span-2">
+        <label class="form-label">Recherche</label>
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+          placeholder="Numéro, nom, description..."
+          class="form-input">
+      </div>
+
+      <!-- Filtre par statut -->
+      <div>
+        <label class="form-label">Statut</label>
+        <select [(ngModel)]="statusFilter" (change)="onFilterChange()" class="form-select">
+          <option value="">Tous les statuts</option>
+          <option value="NOUVEAU">Nouveau</option>
+          <option value="EN_COURS">En cours</option>
+          <option value="EN_ATTENTE">En attente</option>
+          <option value="RESOLU">Résolu</option>
+          <option value="FERME">Fermé</option>
+          <option value="REJETE">Rejeté</option>
+        </select>
+      </div>
+
+      <!-- Filtre par type -->
+      <div>
+        <label class="form-label">Type</label>
+        <select [(ngModel)]="typeFilter" (change)="onFilterChange()" class="form-select">
+          <option value="">Tous les types</option>
+          <option value="LITIGE_FACTURATION">Litige facturation</option>
+          <option value="QUALITE_SERVICE">Qualité service</option>
+          <option value="COUPURE_ABUSIVE">Coupure abusive</option>
+          <option value="RACCORDEMENT">Raccordement</option>
+          <option value="AUTRE">Autre</option>
+        </select>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-end">
+        <button (click)="clearFilters()" class="btn btn-secondary w-full">
+          Réinitialiser
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liste des recours -->
+  <div class="space-y-4">
+    @if (filteredRecours.length === 0) {
+      <div class="card p-12 text-center">
+        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <p class="text-gray-500 text-lg font-medium">Aucun recours trouvé</p>
+        <p class="text-gray-400 mt-1">Essayez de modifier vos critères de recherche</p>
+      </div>
+    } @else {
+      @for (recours of filteredRecours; track recours.id) {
+        <div class="card hover:shadow-lg transition-shadow duration-200" [class]="getUrgencyClass(recours)">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-4">
+                <h3 class="text-lg font-semibold text-gray-900">{{ recours.numeroRecours }}</h3>
+                <span class="px-2 py-1 text-xs font-medium rounded-full" [class]="getStatutBadgeClass(recours.statut)">
+                  {{ getStatutLabel(recours.statut) }}
+                </span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <a [routerLink]="['/recours', recours.id]" 
+                   class="text-primary-600 hover:text-primary-700 font-medium text-sm">
+                  Voir détails
+                </a>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+              <div>
+                <p class="text-sm text-gray-600">Requérant</p>
+                <p class="font-medium text-gray-900">{{ recours.requrantPrenom }} {{ recours.requrantNom }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600">Type</p>
+                <p class="font-medium text-gray-900">{{ getTypeLabel(recours.typeRecours) }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600">Canal</p>
+                <p class="font-medium text-gray-900">{{ getCanalLabel(recours.canalEntree) }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600">Date création</p>
+                <p class="font-medium text-gray-900">{{ formatDate(recours.dateCreation) }}</p>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <p class="text-sm text-gray-600 mb-1">Description</p>
+              <p class="text-gray-900 text-sm">{{ recours.description }}</p>
+            </div>
+
+            @if (recours.montantLitige) {
+              <div class="mb-4">
+                <p class="text-sm text-gray-600">Montant du litige</p>
+                <p class="font-medium text-gray-900">{{ recours.montantLitige | number:'1.0-0' }} FCFA</p>
+              </div>
+            }
+
+            @if (recours.assigneA) {
+              <div class="mb-4">
+                <p class="text-sm text-gray-600">Assigné à</p>
+                <p class="font-medium text-gray-900">{{ recours.assigneA }}</p>
+              </div>
+            }
+
+            @if (recours.dateEcheance) {
+              <div class="flex items-center text-sm">
+                <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-gray-600">Échéance: {{ formatDate(recours.dateEcheance) }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Pagination (optionnelle pour plus tard) -->
+  <div class="mt-8 flex items-center justify-between">
+    <p class="text-sm text-gray-700">
+      Affichage de {{ filteredRecours.length }} recours
+    </p>
+  </div>
+</div>

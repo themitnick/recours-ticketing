@@ -1,0 +1,104 @@
+@if (currentUser) {
+  <div class="min-h-screen bg-gray-50 flex">
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300" 
+         [class."-translate-x-full"]="isSidebarCollapsed">
+      <div class="flex items-center justify-center h-16 bg-primary-600 text-white">
+        <h1 class="text-xl font-bold">ANARE-CI</h1>
+      </div>
+      
+      <nav class="mt-8">
+        @for (item of navigationItems; track item.route) {
+          @if (hasAccess(item.roles)) {
+            <a [routerLink]="item.route" 
+               routerLinkActive="bg-primary-50 text-primary-700 border-r-2 border-primary-600"
+               class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors duration-200">
+              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.icon"></path>
+              </svg>
+              {{ item.label }}
+            </a>
+          }
+        }
+      </nav>
+      
+      <!-- User info -->
+      <div class="absolute bottom-0 w-full p-4 border-t border-gray-200">
+        <div class="flex items-center">
+          <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
+            {{ currentUser?.prenom?.charAt(0) }}{{ currentUser?.nom?.charAt(0) }}
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-gray-900">{{ getUserDisplayName() }}</p>
+            <p class="text-xs text-gray-500">{{ getRoleDisplayName() }}</p>
+          </div>
+        </div>
+        <button (click)="logout()" 
+                class="mt-3 w-full text-left text-sm text-gray-500 hover:text-gray-700">
+          Déconnexion
+        </button>
+      </div>
+    </div>
+    
+    <!-- Main content -->
+    <div class="flex-1" [class.ml-64]="!isSidebarCollapsed">
+      <!-- Top bar -->
+      <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="flex items-center justify-between h-16 px-6">
+          <button (click)="toggleSidebar()" 
+                  class="text-gray-500 hover:text-gray-700 focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+          
+          <div class="flex items-center space-x-4">
+            <!-- Notifications -->
+            <button class="text-gray-500 hover:text-gray-700 relative">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+              <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
+            </button>
+            
+            <!-- User avatar -->
+            <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
+              {{ currentUser?.prenom?.charAt(0) }}{{ currentUser?.nom?.charAt(0) }}
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Page content -->
+      <main class="p-6">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+  </div>
+} @else {
+  <!-- Login form -->
+  <div class="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div class="max-w-md w-full bg-white rounded-lg shadow-md p-6">
+      <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold text-gray-900">ANARE-CI</h1>
+        <p class="text-gray-600 mt-2">Système de Gestion des Recours et Ticketing</p>
+      </div>
+      
+      <form class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Email</label>
+          <input type="email" class="input-field mt-1" placeholder="Votre email">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Mot de passe</label>
+          <input type="password" class="input-field mt-1" placeholder="Votre mot de passe">
+        </div>
+        <button type="submit" class="btn-primary w-full">
+          Se connecter
+        </button>
+      </form>
+    </div>
+  </div>
+}

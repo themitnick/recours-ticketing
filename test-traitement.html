@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Décision Superviseur</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-link { 
+            display: inline-block; 
+            padding: 10px 20px; 
+            background: #007bff; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px; 
+            margin: 10px;
+        }
+        .test-link:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Test Interface Décision Superviseur</h1>
+    <p>Cliquez sur les liens ci-dessous pour tester l'affichage de la section "Décision Superviseur" :</p>
+    
+    <div>
+        <a href="http://localhost:4201/traitement/recours/1" class="test-link">
+            📋 Traitement Recours #1
+        </a>
+        
+        <a href="http://localhost:4201/traitement/ticket/1" class="test-link">
+            🎫 Traitement Ticket #1
+        </a>
+        
+        <a href="http://localhost:4201/traitement/recours/999" class="test-link">
+            🆕 Nouvelle Demande (Test Data)
+        </a>
+    </div>
+    
+    <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+        <h3>🎯 Objectif du Test</h3>
+        <p>Vérifier que la section <strong>"Décision Superviseur"</strong> s'affiche correctement quand :</p>
+        <ul>
+            <li>✅ L'utilisateur a le rôle SUPERVISEUR_RECOURS, SUPERVISEUR_IT ou ADMIN</li>
+            <li>✅ Le statut de la demande est "EN_COURS", "NOUVEAU" ou "EN_ATTENTE_VALIDATION"</li>
+            <li>✅ Les permissions canValidateNiveau1 ou canValidateNiveau2 sont activées</li>
+        </ul>
+        
+        <h3>🔧 Boutons de Debug Disponibles</h3>
+        <ul>
+            <li><strong>👥 Superviseur Recours</strong> - Simule le rôle SUPERVISEUR_RECOURS</li>
+            <li><strong>💻 Superviseur IT</strong> - Simule le rôle SUPERVISEUR_IT</li>
+            <li><strong>🔧 Admin</strong> - Simule le rôle ADMIN</li>
+            <li><strong>🔄 EN_COURS</strong> - Force le statut à EN_COURS</li>
+            <li><strong>🆕 Test Data</strong> - Recrée des données de test</li>
+        </ul>
+    </div>
+</body>
+</html>

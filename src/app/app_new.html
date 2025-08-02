@@ -1,0 +1,97 @@
+@if (currentUser) {
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" [class.mobile-open]="!isSidebarCollapsed">
+      <div class="sidebar-header">
+        <h1>ANARE-CI</h1>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <a routerLink="/dashboard" class="nav-item" routerLinkActive="active">
+          <i class="icon-dashboard"></i>
+          Tableau de bord
+        </a>
+        
+        @if (hasRole('agent') || hasRole('superviseur') || hasRole('administrateur')) {
+          <a routerLink="/recours" class="nav-item" routerLinkActive="active">
+            <i class="icon-recours"></i>
+            Gestion des recours
+          </a>
+        }
+        
+        @if (hasRole('technicien') || hasRole('superviseur') || hasRole('administrateur')) {
+          <a routerLink="/tickets" class="nav-item" routerLinkActive="active">
+            <i class="icon-tickets"></i>
+            Support IT
+          </a>
+        }
+        
+        @if (hasRole('superviseur') || hasRole('administrateur')) {
+          <a routerLink="/rapports" class="nav-item" routerLinkActive="active">
+            <i class="icon-reports"></i>
+            Rapports
+          </a>
+        }
+        
+        @if (hasRole('administrateur')) {
+          <a routerLink="/admin" class="nav-item" routerLinkActive="active">
+            <i class="icon-admin"></i>
+            Administration
+          </a>
+        }
+      </nav>
+    </aside>
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <button (click)="toggleSidebar()" class="btn btn-secondary mobile-menu-btn">
+          ☰
+        </button>
+        
+        <div class="header-right">
+          <span class="user-info">{{ currentUser.nom }} {{ currentUser.prenom }}</span>
+          <span class="user-role">({{ currentUser.role }})</span>
+          <button (click)="logout()" class="btn btn-danger">
+            Déconnexion
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="content-wrapper">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+} @else {
+  <!-- Page de connexion -->
+  <div class="login-page">
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-header">
+          <h1>ANARE-CI</h1>
+          <p>Système de gestion des recours et ticketing</p>
+        </div>
+        
+        <form class="login-form" (ngSubmit)="login()">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" [(ngModel)]="loginForm.email" name="email" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Mot de passe</label>
+            <input type="password" class="form-input" [(ngModel)]="loginForm.password" name="password" required>
+          </div>
+          
+          <button type="submit" class="btn btn-primary w-full">
+            Se connecter
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+}

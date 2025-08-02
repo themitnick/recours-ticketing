@@ -1,0 +1,306 @@
+<div class="min-h-screen bg-gray-50 py-6">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <!-- En-tête -->
+      <div class="border-b border-gray-200 pb-4 mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Créer un nouveau recours</h1>
+        <p class="text-sm text-gray-600 mt-1">Remplissez tous les champs obligatoires pour soumettre votre demande de recours</p>
+      </div>
+
+      <form [formGroup]="recoursForm" (ngSubmit)="onSubmit()" class="space-y-8">
+        <!-- Section 1: Informations générales -->
+        <div class="bg-gray-50 rounded-lg p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+            Informations générales
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="titre" class="block text-sm font-medium text-gray-700 mb-2">
+                Titre du recours <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="titre"
+                formControlName="titre"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Titre descriptif du recours"
+              >
+              <div *ngIf="recoursForm.get('titre')?.errors && recoursForm.get('titre')?.touched" 
+                   class="text-red-500 text-sm mt-1">
+                Le titre est obligatoire
+              </div>
+            </div>
+
+            <div>
+              <label for="type" class="block text-sm font-medium text-gray-700 mb-2">
+                Type de recours <span class="text-red-500">*</span>
+              </label>
+              <select
+                id="type"
+                formControlName="type"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">Sélectionner un type</option>
+                <option value="TECHNIQUE">Problème technique</option>
+                <option value="ADMINISTRATIF">Recours administratif</option>
+                <option value="FACTURATION">Facturation</option>
+                <option value="AUTRE">Autre</option>
+              </select>
+              <div *ngIf="recoursForm.get('type')?.errors && recoursForm.get('type')?.touched" 
+                   class="text-red-500 text-sm mt-1">
+                Le type est obligatoire
+              </div>
+            </div>
+
+            <div>
+              <label for="priorite" class="block text-sm font-medium text-gray-700 mb-2">
+                Priorité <span class="text-red-500">*</span>
+              </label>
+              <select
+                id="priorite"
+                formControlName="priorite"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">Sélectionner une priorité</option>
+                <option value="BASSE">Basse</option>
+                <option value="NORMALE">Normale</option>
+                <option value="HAUTE">Haute</option>
+                <option value="URGENTE">Urgente</option>
+              </select>
+              <div *ngIf="recoursForm.get('priorite')?.errors && recoursForm.get('priorite')?.touched" 
+                   class="text-red-500 text-sm mt-1">
+                La priorité est obligatoire
+              </div>
+            </div>
+
+            <div>
+              <label for="dateIncident" class="block text-sm font-medium text-gray-700 mb-2">
+                Date de l'incident
+              </label>
+              <input
+                type="date"
+                id="dateIncident"
+                formControlName="dateIncident"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Description -->
+        <div class="bg-gray-50 rounded-lg p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <i class="fas fa-file-alt mr-2 text-green-500"></i>
+            Description détaillée
+          </h2>
+          
+          <div class="space-y-4">
+            <div>
+              <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                Description du problème <span class="text-red-500">*</span>
+              </label>
+              <textarea
+                id="description"
+                formControlName="description"
+                rows="6"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Décrivez en détail le problème rencontré, les circonstances et l'impact..."
+              ></textarea>
+              <div *ngIf="recoursForm.get('description')?.errors && recoursForm.get('description')?.touched" 
+                   class="text-red-500 text-sm mt-1">
+                La description est obligatoire
+              </div>
+            </div>
+
+            <div>
+              <label for="impact" class="block text-sm font-medium text-gray-700 mb-2">
+                Impact du problème
+              </label>
+              <textarea
+                id="impact"
+                formControlName="impact"
+                rows="3"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Décrivez l'impact de ce problème sur votre activité..."
+              ></textarea>
+            </div>
+
+            <div>
+              <label for="actionsEntreprises" class="block text-sm font-medium text-gray-700 mb-2">
+                Actions déjà entreprises
+              </label>
+              <textarea
+                id="actionsEntreprises"
+                formControlName="actionsEntreprises"
+                rows="3"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Décrivez les actions que vous avez déjà tentées pour résoudre le problème..."
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Informations de contact -->
+        <div class="bg-gray-50 rounded-lg p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <i class="fas fa-user mr-2 text-purple-500"></i>
+            Informations de contact
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="requrantNom" class="block text-sm font-medium text-gray-700 mb-2">
+                Nom <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="requrantNom"
+                formControlName="requrantNom"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Votre nom"
+              >
+              <div *ngIf="recoursForm.get('requrantNom')?.errors && recoursForm.get('requrantNom')?.touched" 
+                   class="text-red-500 text-sm mt-1">
+                Le nom est obligatoire
+              </div>
+            </div>
+
+            <div>
+              <label for="requrantPrenom" class="block text-sm font-medium text-gray-700 mb-2">
+                Prénom <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="requrantPrenom"
+                formControlName="requrantPrenom"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Votre prénom"
+              >
+              <div *ngIf="recoursForm.get('requrantPrenom')?.errors && recoursForm.get('requrantPrenom')?.touched" 
+                   class="text-red-500 text-sm mt-1">
+                Le prénom est obligatoire
+              </div>
+            </div>
+
+            <div>
+              <label for="requrantEmail" class="block text-sm font-medium text-gray-700 mb-2">
+                Email <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="email"
+                id="requrantEmail"
+                formControlName="requrantEmail"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="votre.email@exemple.com"
+              >
+              <div *ngIf="recoursForm.get('requrantEmail')?.errors && recoursForm.get('requrantEmail')?.touched" 
+                   class="text-red-500 text-sm mt-1">
+                <div *ngIf="recoursForm.get('requrantEmail')?.errors?.['required']">L'email est obligatoire</div>
+                <div *ngIf="recoursForm.get('requrantEmail')?.errors?.['email']">Format d'email invalide</div>
+              </div>
+            </div>
+
+            <div>
+              <label for="requrantTelephone" class="block text-sm font-medium text-gray-700 mb-2">
+                Téléphone
+              </label>
+              <input
+                type="tel"
+                id="requrantTelephone"
+                formControlName="requrantTelephone"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="+33 1 23 45 67 89"
+              >
+            </div>
+
+            <div class="md:col-span-2">
+              <label for="requrantOrganisation" class="block text-sm font-medium text-gray-700 mb-2">
+                Organisation/Entreprise
+              </label>
+              <input
+                type="text"
+                id="requrantOrganisation"
+                formControlName="requrantOrganisation"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Nom de votre organisation"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Documents joints -->
+        <div class="bg-gray-50 rounded-lg p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <i class="fas fa-paperclip mr-2 text-orange-500"></i>
+            Documents joints
+          </h2>
+          
+          <div class="space-y-4">
+            <app-file-upload
+              [allowedTypes]="allowedFileTypes"
+              [maxSizeInMB]="maxFileSize"
+              [multiple]="true"
+              (filesSelected)="onFilesSelected($event)"
+              (fileRemoved)="onFileRemoved($event)"
+            ></app-file-upload>
+
+            <div *ngIf="formData.fichiers && formData.fichiers.length > 0" class="mt-4">
+              <h3 class="text-sm font-medium text-gray-700 mb-2">Fichiers sélectionnés:</h3>
+              <ul class="space-y-2">
+                <li *ngFor="let fichier of formData.fichiers" 
+                    class="flex items-center justify-between p-2 bg-white rounded border">
+                  <div class="flex items-center">
+                    <i class="fas fa-file mr-2 text-gray-500"></i>
+                    <span class="text-sm">{{ fichier.nom }} ({{ formatFileSize(fichier.taille) }})</span>
+                  </div>
+                  <button
+                    type="button"
+                    (click)="removeFile(fichier)"
+                    class="text-red-500 hover:text-red-700"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="flex justify-between items-center pt-6 border-t border-gray-200">
+          <button
+            type="button"
+            (click)="onCancel()"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+          >
+            Annuler
+          </button>
+
+          <div class="flex space-x-3">
+            <button
+              type="button"
+              (click)="onSaveDraft()"
+              [disabled]="!recoursForm.valid"
+              class="px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-md hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <i class="fas fa-save mr-2"></i>
+              Sauvegarder brouillon
+            </button>
+
+            <button
+              type="submit"
+              [disabled]="!recoursForm.valid || isSubmitting"
+              class="px-6 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <i *ngIf="isSubmitting" class="fas fa-spinner fa-spin mr-2"></i>
+              <i *ngIf="!isSubmitting" class="fas fa-paper-plane mr-2"></i>
+              {{ isSubmitting ? 'Création en cours...' : 'Créer le recours' }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
